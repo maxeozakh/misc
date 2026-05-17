@@ -1,7 +1,16 @@
 #include <iostream>
 #include <cuda_runtime.h>
 
-void vecAdd(float *A_h, float *B_h, float *C_h, int n)
+__global__ void vecAddKernel(float *A, float *B, float *C, int n)
+{
+	int i = threadIdx.x + blockDim.x * blockIdx.x;
+	if (i < n)
+	{
+		C[i] = A[i] + B[i];
+	};
+};
+
+int vecAdd(float *A_h, float *B_h, float *C_h, int n)
 {
 	std::cout << "hey" << "\n";
 	int size = n * sizeof(float);
@@ -14,7 +23,7 @@ void vecAdd(float *A_h, float *B_h, float *C_h, int n)
 	cudaMemcpy(A_d, A_h, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(B_d, B_h, size, cudaMemcpyHostToDevice);
 
-	// addition here
+	vecAddKernel<<<ceil(n / 256.0), 256>>>(A_d, B_d, C_d, n);
 
 	cudaMemcpy(C_h, C_d, size, cudaMemcpyDeviceToHost);
 
