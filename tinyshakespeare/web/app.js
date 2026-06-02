@@ -204,8 +204,7 @@
   seedInput.addEventListener("input", reset);
   useCheckpointStateInput.addEventListener("change", reset);
 
-  pauseButton.disabled = true;
   hydrateStats();
   syncControls();
-  prepareSeed(seedInput.value);
+  start();
 })();
